@@ -20,7 +20,8 @@ public class LibraryEventController {
     @PostMapping("/v1/libraryevent")
     public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody LibraryEvent libraryEvent) {
         log.info("libraryEvent = {}", libraryEvent);
-        libraryEventsProducer.send(libraryEvent);
+//        libraryEventsProducer.send(libraryEvent);
+        libraryEventsProducer.send_producerRecord(libraryEvent);
         log.info("After Sending libraryEvent");
         return ResponseEntity.status(HttpStatus.CREATED).body(libraryEvent);
     }
