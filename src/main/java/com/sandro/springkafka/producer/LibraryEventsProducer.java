@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,6 +49,18 @@ public class LibraryEventsProducer {
                     if (throwable != null) handleFailure(key, value, throwable);
                     else handleSuccess(key, value, sendResult);
                 });
+    }
+
+    public SendResult<Integer, String> send_sync(LibraryEvent libraryEvent) {
+        var key = libraryEvent.libraryEventId();
+        var value = writeValueAsString(libraryEvent);
+        try {
+            var sendResult = kafkaTemplate.send(topic, key, value).get();
+            handleSuccess(key, value, sendResult);
+            return sendResult;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void handleSuccess(Integer key, String value, SendResult<Integer, String> sendResult) {
