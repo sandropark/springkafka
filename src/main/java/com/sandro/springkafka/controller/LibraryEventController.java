@@ -2,6 +2,7 @@ package com.sandro.springkafka.controller;
 
 import com.sandro.springkafka.domain.LibraryEvent;
 import com.sandro.springkafka.producer.LibraryEventsProducer;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,7 @@ public class LibraryEventController {
     private final LibraryEventsProducer libraryEventsProducer;
 
     @PostMapping("/v1/libraryevent")
-    public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody LibraryEvent libraryEvent) {
+    public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody @Valid LibraryEvent libraryEvent) {
         log.info("libraryEvent = {}", libraryEvent);
 //        libraryEventsProducer.send(libraryEvent);
 //        libraryEventsProducer.send_producerRecord(libraryEvent);
