@@ -1,4 +1,4 @@
-package com.sandro.springkafka.domain;
+package com.kafka.domain;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

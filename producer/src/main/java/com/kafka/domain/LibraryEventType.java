@@ -1,4 +1,4 @@
-package com.sandro.springkafka.domain;
+package com.kafka.domain;
 
 public enum LibraryEventType {
     NEW, UPDATE

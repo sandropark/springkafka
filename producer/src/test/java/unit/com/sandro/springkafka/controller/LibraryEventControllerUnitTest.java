@@ -1,9 +1,9 @@
-package com.sandro.springkafka.controller;
+package com.kafka.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sandro.springkafka.domain.LibraryEvent;
-import com.sandro.springkafka.producer.LibraryEventsProducer;
-import com.sandro.springkafka.util.TestUtil;
+import com.kafka.domain.LibraryEvent;
+import com.kafka.producer.LibraryEventsProducer;
+import com.sandro.producer.util.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

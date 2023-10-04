@@ -1,8 +1,8 @@
-package com.sandro.springkafka.controller;
+package com.kafka.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sandro.springkafka.domain.LibraryEvent;
-import com.sandro.springkafka.util.TestUtil;
+import com.kafka.domain.LibraryEvent;
+import com.sandro.producer.util.TestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

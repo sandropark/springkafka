@@ -10,5 +10,17 @@ dependencies {
 
 }
 """
+
+    ["src/main/java/com/kafka",
+     "src/main/resources",
+     "src/test/java/unit",
+     "src/test/java/intg",
+     "src/test/resources",
+    ].each { srcDir ->
+        def srcFolder = new File(dir, srcDir)
+
+        if (!srcFolder.exists())
+            srcFolder.mkdirs()
+    }
     include ":${dir}"
 }

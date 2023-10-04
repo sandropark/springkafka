@@ -1,8 +1,8 @@
-package com.sandro.springkafka.controller;
+package com.kafka.controller;
 
-import com.sandro.springkafka.domain.LibraryEvent;
-import com.sandro.springkafka.domain.LibraryEventType;
-import com.sandro.springkafka.producer.LibraryEventsProducer;
+import com.kafka.domain.LibraryEvent;
+import com.kafka.domain.LibraryEventType;
+import com.kafka.producer.LibraryEventsProducer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

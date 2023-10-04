@@ -1,10 +1,10 @@
-package com.sandro.springkafka.util;
+package com.sandro.producer.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sandro.springkafka.domain.Book;
-import com.sandro.springkafka.domain.LibraryEvent;
-import com.sandro.springkafka.domain.LibraryEventType;
+import com.kafka.domain.Book;
+import com.kafka.domain.LibraryEvent;
+import com.kafka.domain.LibraryEventType;
 
 public class TestUtil {
 
