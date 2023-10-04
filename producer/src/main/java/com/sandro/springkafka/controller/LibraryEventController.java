@@ -24,8 +24,8 @@ public class LibraryEventController {
     public ResponseEntity<LibraryEvent> create(@RequestBody @Valid LibraryEvent libraryEvent) {
         log.info("libraryEvent = {}", libraryEvent);
 //        libraryEventsProducer.send(libraryEvent);
-//        libraryEventsProducer.send_producerRecord(libraryEvent);
-        libraryEventsProducer.send_sync(libraryEvent);
+        libraryEventsProducer.send_producerRecord(libraryEvent);
+//        libraryEventsProducer.send_sync(libraryEvent);
         return ResponseEntity.status(HttpStatus.CREATED).body(libraryEvent);
     }
 
@@ -36,7 +36,7 @@ public class LibraryEventController {
         ResponseEntity<String> BAD_REQUEST = validateLibraryEvent(libraryEvent);
         if(BAD_REQUEST != null) return BAD_REQUEST;
 
-        libraryEventsProducer.send_sync(libraryEvent);
+        libraryEventsProducer.send_producerRecord(libraryEvent);
         return ResponseEntity.status(HttpStatus.OK).body(libraryEvent);
     }
 

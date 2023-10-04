@@ -1,1 +1,14 @@
 rootProject.name = 'springkafka'
+
+['consumer', 'producer'].each { dir ->
+    def gradleFile = new File(dir, "build.gradle")
+
+    if (!gradleFile.exists())
+        gradleFile.text =
+                """
+dependencies {
+
+}
+"""
+    include ":${dir}"
+}
