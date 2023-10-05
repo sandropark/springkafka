@@ -6,6 +6,7 @@ import com.kafka.consumer.LibraryEventsConsumer;
 import com.kafka.entity.Book;
 import com.kafka.entity.LibraryEvent;
 import com.kafka.entity.LibraryEventType;
+import com.kafka.jpa.BooksRepository;
 import com.kafka.jpa.LibraryEventsRepository;
 import com.kafka.service.LibraryEventService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -52,6 +53,8 @@ class LibraryEventsConsumerTest {
     LibraryEventService libraryEventServiceSpy;
     @Autowired
     LibraryEventsRepository libraryEventsRepository;
+    @Autowired
+    BooksRepository booksRepository;
     @Autowired
     ObjectMapper objectMapper;
 
@@ -100,28 +103,23 @@ class LibraryEventsConsumerTest {
         libraryEvent.setLibraryEventType(LibraryEventType.UPDATE);
         Book updateBook = Book.builder()
                 .bookId(456L)
-                .bookAuthor("Kafka Using Spring Boot 2.x")
-                .bookName("Sandro")
-                .libraryEvent(libraryEvent)
+                .bookName("Kafka Using Spring Boot 2.x")
+                .bookAuthor("Sandro")
                 .build();
         libraryEvent.setBook(updateBook);
 
         String updatedJson = objectMapper.writeValueAsString(libraryEvent);
 
         kafkaTemplate.sendDefault(updatedJson).get();
+        new CountDownLatch(1).await(3, TimeUnit.SECONDS);
 
-//        new CountDownLatch(1).await(3, TimeUnit.SECONDS);
-//
-//        // Then
-//        verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
-//        verify(libraryEventServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
-//
-//        List<LibraryEvent> libraryEvents = (List<LibraryEvent>) libraryEventsRepository.findAll();
-//        assertThat(libraryEvents).hasSize(1);
-//        libraryEvents.forEach(libraryEvent -> {
-//            assertThat(libraryEvent.getLibraryEventId()).isNotNull();
-//            assertThat(libraryEvent.getBook().getBookId()).isEqualTo(456);
-//        });
+        // Then
+        verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
+
+        Book book = booksRepository.findById(456L).orElseThrow();
+        assertThat(book.getBookName()).isEqualTo("Kafka Using Spring Boot 2.x");
+        assertThat(book.getBookAuthor()).isEqualTo("Sandro");
     }
 
 }
