@@ -1,8 +1,11 @@
 package intg.com.kafka.consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.ConsumerApp;
 import com.kafka.consumer.LibraryEventsConsumer;
+import com.kafka.entity.Book;
 import com.kafka.entity.LibraryEvent;
+import com.kafka.entity.LibraryEventType;
 import com.kafka.jpa.LibraryEventsRepository;
 import com.kafka.service.LibraryEventService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -49,6 +52,8 @@ class LibraryEventsConsumerTest {
     LibraryEventService libraryEventServiceSpy;
     @Autowired
     LibraryEventsRepository libraryEventsRepository;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
@@ -81,6 +86,42 @@ class LibraryEventsConsumerTest {
             assertThat(libraryEvent.getLibraryEventId()).isNotNull();
             assertThat(libraryEvent.getBook().getBookId()).isEqualTo(456);
         });
+    }
+
+    @Test
+    void publishUpdateLibraryEvent() throws Exception {
+        // Given
+        String json = "{\"libraryEventId\":null,\"libraryEventType\": \"NEW\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
+        LibraryEvent libraryEvent = objectMapper.readValue(json, LibraryEvent.class);
+        libraryEvent.map();
+        libraryEventsRepository.save(libraryEvent);
+
+        // When
+        libraryEvent.setLibraryEventType(LibraryEventType.UPDATE);
+        Book updateBook = Book.builder()
+                .bookId(456L)
+                .bookAuthor("Kafka Using Spring Boot 2.x")
+                .bookName("Sandro")
+                .libraryEvent(libraryEvent)
+                .build();
+        libraryEvent.setBook(updateBook);
+
+        String updatedJson = objectMapper.writeValueAsString(libraryEvent);
+
+        kafkaTemplate.sendDefault(updatedJson).get();
+
+//        new CountDownLatch(1).await(3, TimeUnit.SECONDS);
+//
+//        // Then
+//        verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
+//        verify(libraryEventServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
+//
+//        List<LibraryEvent> libraryEvents = (List<LibraryEvent>) libraryEventsRepository.findAll();
+//        assertThat(libraryEvents).hasSize(1);
+//        libraryEvents.forEach(libraryEvent -> {
+//            assertThat(libraryEvent.getLibraryEventId()).isNotNull();
+//            assertThat(libraryEvent.getBook().getBookId()).isEqualTo(456);
+//        });
     }
 
 }
