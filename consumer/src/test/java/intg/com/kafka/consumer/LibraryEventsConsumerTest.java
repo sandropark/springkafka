@@ -122,4 +122,18 @@ class LibraryEventsConsumerTest {
         assertThat(book.getBookAuthor()).isEqualTo("Sandro");
     }
 
+    @Test
+    void publishUpdateLibraryEvent_null_libraryEvent() throws Exception {
+        // Given
+        String json = "{\"libraryEventId\":null,\"libraryEventType\": \"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
+        kafkaTemplate.sendDefault(json).get();
+
+        // When
+        new CountDownLatch(1).await(5, TimeUnit.SECONDS);
+
+        // Then
+        verify(libraryEventsConsumerSpy, times(10)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventServiceSpy, times(10)).processLibraryEvent(isA(ConsumerRecord.class));
+    }
+
 }
