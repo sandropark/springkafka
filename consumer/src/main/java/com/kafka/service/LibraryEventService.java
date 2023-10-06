@@ -7,6 +7,7 @@ import com.kafka.jpa.LibraryEventsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,9 @@ public class LibraryEventService {
     public void processLibraryEvent(ConsumerRecord<Integer, String> record) {
         LibraryEvent libraryEvent = readValue(record);
         log.info("LibraryEvent = {}", libraryEvent);
+
+        if (libraryEvent != null && libraryEvent.getLibraryEventId() != null && libraryEvent.getLibraryEventId() == 999)
+            throw new RecoverableDataAccessException("Temporary Network Issue");
 
         switch (libraryEvent.getLibraryEventType()) {
             case NEW -> {

@@ -129,7 +129,21 @@ class LibraryEventsConsumerTest {
         kafkaTemplate.sendDefault(json).get();
 
         // When
-        new CountDownLatch(1).await(3000, TimeUnit.MILLISECONDS);
+        new CountDownLatch(1).await(500, TimeUnit.MILLISECONDS);
+
+        // Then
+        verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
+    }
+
+    @Test
+    void publishUpdateLibraryEvent_999_libraryEvent() throws Exception {
+        // Given
+        String json = "{\"libraryEventId\":999,\"libraryEventType\": \"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
+        kafkaTemplate.sendDefault(json).get();
+
+        // When
+        new CountDownLatch(1).await(2500, TimeUnit.MILLISECONDS);
 
         // Then
         verify(libraryEventsConsumerSpy, times(3)).onMessage(isA(ConsumerRecord.class));
