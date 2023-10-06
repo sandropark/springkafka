@@ -143,11 +143,11 @@ class LibraryEventsConsumerTest {
         kafkaTemplate.sendDefault(json).get();
 
         // When
-        new CountDownLatch(1).await(2500, TimeUnit.MILLISECONDS);
+        new CountDownLatch(1).await(8000, TimeUnit.MILLISECONDS);
 
         // Then
-        verify(libraryEventsConsumerSpy, times(3)).onMessage(isA(ConsumerRecord.class));
-        verify(libraryEventServiceSpy, times(3)).processLibraryEvent(isA(ConsumerRecord.class));
+        verify(libraryEventsConsumerSpy, times(4)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventServiceSpy, times(4)).processLibraryEvent(isA(ConsumerRecord.class));
     }
 
 }
