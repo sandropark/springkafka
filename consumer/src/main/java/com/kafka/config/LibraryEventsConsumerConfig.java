@@ -34,6 +34,7 @@ public class LibraryEventsConsumerConfig {
     public DeadLetterPublishingRecoverer publishingRecoverer() {
         return new DeadLetterPublishingRecoverer(kafkaTemplate,
                 (consumerRecord, e) -> {
+                    log.error("Record in DeadLetterPublishingRecoverer = {}", consumerRecord);
                     String topic = deadLetterTopic;
                     if (e.getCause() instanceof RecoverableDataAccessException)
                         topic = retryTopic;
@@ -52,12 +53,12 @@ public class LibraryEventsConsumerConfig {
         var errorHandler = new DefaultErrorHandler(publishingRecoverer(), expBackOff);
 
         // Retry 하지 않을 예외 설정
-//        List<Class<? extends Exception>> notRetryableExceptions = List.of(IllegalArgumentException.class);
-//        notRetryableExceptions.forEach(errorHandler::addNotRetryableExceptions);
+        List<Class<? extends Exception>> notRetryableExceptions = List.of(IllegalArgumentException.class);
+        notRetryableExceptions.forEach(errorHandler::addNotRetryableExceptions);
 
         // Retry 할 예외 설정
-        var exceptionToRetryList = List.of(RecoverableDataAccessException.class);
-        exceptionToRetryList.forEach(errorHandler::addRetryableExceptions);
+//        var exceptionToRetryList = List.of(RecoverableDataAccessException.class);
+//        exceptionToRetryList.forEach(errorHandler::addRetryableExceptions);
 
 
         errorHandler.setRetryListeners((record, ex, deliveryAttempt) ->

@@ -9,6 +9,8 @@ server:
 topics:
   retry: "library-events.RETRY"
   dlt: "library-events.DLT"
+retryListener:
+  startup: false
 ---
 spring:
   config:

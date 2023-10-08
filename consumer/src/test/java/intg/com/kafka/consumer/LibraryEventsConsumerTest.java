@@ -144,11 +144,20 @@ class LibraryEventsConsumerTest {
         kafkaTemplate.sendDefault(json).get();
 
         // When
-        new CountDownLatch(1).await(500, TimeUnit.MILLISECONDS);
+        new CountDownLatch(1).await(3000, TimeUnit.MILLISECONDS);
 
         // Then
         verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
         verify(libraryEventServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
+
+        var configs = KafkaTestUtils.consumerProps("group2", "true", broker);
+        configs.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        consumer = new DefaultKafkaConsumerFactory<>(configs, new IntegerDeserializer(), new StringDeserializer()).createConsumer();
+        broker.consumeFromAllEmbeddedTopics(consumer);
+
+        ConsumerRecord<Integer, String> record = KafkaTestUtils.getSingleRecord(consumer, deadLetterTopic);
+        System.out.println("ConsumerRecord is = " + record.value());
+        assertThat(record.value()).isEqualTo(json);
     }
 
     @Test
