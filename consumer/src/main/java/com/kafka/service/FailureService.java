@@ -1,6 +1,7 @@
 package com.kafka.service;
 
 import com.kafka.entity.FailureRecord;
+import com.kafka.entity.FailureRecordType;
 import com.kafka.jpa.FailureRecordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class FailureService {
     private final FailureRecordRepository failureRecordRepository;
 
-    public void save(ConsumerRecord<Integer, String> consumerRecord, Exception e, String status) {
+    public void save(ConsumerRecord<Integer, String> consumerRecord, Exception e, FailureRecordType status) {
         var failureRecord  = FailureRecord.builder()
                 .status(status)
                 .topic(consumerRecord.topic())

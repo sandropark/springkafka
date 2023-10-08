@@ -22,13 +22,14 @@ import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.List;
 
+import static com.kafka.entity.FailureRecordType.DEAD;
+import static com.kafka.entity.FailureRecordType.RETRY;
+
 //@EnableKafka  // 최신 버전 스프링부트는 이 에너테이션을 달지 않아도 된다.
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
 public class LibraryEventsConsumerConfig {
-    private static final String DEAD = "DEAD";
-    private static final String RETRY = "RETRY";
 
     @Value("${topics.retry}")
     private String retryTopic;

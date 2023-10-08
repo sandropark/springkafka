@@ -22,5 +22,5 @@ public class FailureRecord {
     private String errorRecord;
     private Long offsetValue;
     private String exception;
-    private String status;
+    private FailureRecordType status;
 }
