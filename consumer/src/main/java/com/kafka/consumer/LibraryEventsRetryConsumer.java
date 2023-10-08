@@ -14,7 +14,11 @@ public class LibraryEventsRetryConsumer {
 
     private final LibraryEventService libraryEventService;
 
-    @KafkaListener(topics = "${topics.retry}", groupId = "retry-listener-group")
+    @KafkaListener(
+            topics = "${topics.retry}",
+            groupId = "retry-listener-group",
+            autoStartup = "${retryListener.startup:true}"  // 해당 설정이 없다면 true로 설정한다는 뜻.
+    )
     public void onMessage(ConsumerRecord<Integer, String> record) {
         log.info("record in Retry Consumer = {}", record);
         record.headers().forEach(header -> log.info("key={}, value={}", header.key(), new String(header.value())));
