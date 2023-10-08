@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.ConsumerApp;
 import com.kafka.consumer.LibraryEventsConsumer;
 import com.kafka.entity.Book;
+import com.kafka.entity.FailureRecord;
 import com.kafka.entity.LibraryEvent;
 import com.kafka.entity.LibraryEventType;
 import com.kafka.jpa.BooksRepository;
+import com.kafka.jpa.FailureRecordRepository;
 import com.kafka.jpa.LibraryEventsRepository;
 import com.kafka.service.LibraryEventService;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
@@ -64,6 +67,8 @@ class LibraryEventsConsumerTest {
     BooksRepository booksRepository;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    FailureRecordRepository failureRecordRepository;
     @Value("${topics.retry}")
     private String retryTopic;
     @Value("${topics.dlt}")
@@ -158,6 +163,24 @@ class LibraryEventsConsumerTest {
         ConsumerRecord<Integer, String> record = KafkaTestUtils.getSingleRecord(consumer, deadLetterTopic);
         System.out.println("ConsumerRecord is = " + record.value());
         assertThat(record.value()).isEqualTo(json);
+    }
+
+    @Test
+    void publishUpdateLibraryEvent_null_libraryEvent_failureRecord() throws Exception {
+        // Given
+        String json = "{\"libraryEventId\":null,\"libraryEventType\": \"UPDATE\",\"book\":{\"bookId\":456,\"bookName\":\"Kafka Using Spring Boot\",\"bookAuthor\":\"Dilip\"}}";
+        kafkaTemplate.sendDefault(json).get();
+
+        // When
+        new CountDownLatch(1).await(3000, TimeUnit.MILLISECONDS);
+
+        // Then
+        verify(libraryEventsConsumerSpy, times(1)).onMessage(isA(ConsumerRecord.class));
+        verify(libraryEventServiceSpy, times(1)).processLibraryEvent(isA(ConsumerRecord.class));
+
+        var failureRecords = (List<FailureRecord>) failureRecordRepository.findAll();
+        assertThat(failureRecords).hasSize(1);
+        System.out.println("failureRecord" + failureRecords);
     }
 
     @Test
